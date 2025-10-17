@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brainrot Spinner 💀</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            background: linear-gradient(135deg, var(--color1) 0%, var(--color2) 50%, var(--color3) 100%);
+            background-size: 400% 400%;
+            animation: gradientWave 15s ease infinite;
+            min-height: 100vh;
+            overflow: hidden;
+            --color1: #667eea;
+            --color2: #764ba2;
+            --color3: #f093fb;
+        }
+
+        @keyframes gradientWave {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 3px solid #00ff00;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 2em;
+            cursor: pointer;
+            z-index: 1001;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+
+        .toggle-btn:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.8);
+        }
+
+        .panel {
+            position: fixed;
+            right: 0;
+            top: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            border-left: 3px solid #00ff00;
+            padding: 25px;
+            width: 350px;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: -5px 0 50px rgba(0, 255, 0, 0.3);
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .panel.hidden {
+            transform: translateX(100%);
+        }
+
+        h1 {
+            color: #00ff00;
+            text-align: center;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px #00ff00;
+            letter-spacing: 2px;
+        }
+
+        .section-title {
+            color: #00ffff;
+            font-size: 1.2em;
+            margin: 20px 0 10px 0;
+            border-bottom: 2px solid #00ffff;
+            padding-bottom: 5px;
+        }
+
+        .brainrot-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+
+        .brainrot-item {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #00ff00;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .brainrot-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .brainrot-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.8);
+            border-color: #00ffff;
+        }
+
+        .brainrot-item.selected {
+            border: 3px solid #00ff00;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 1);
+            animation: pulse 0.5s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .controls {
+            margin-top: 20px;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            color: #00ffff;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            background: #333;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(45deg, #ff006e, #00ff00);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        input[type="color"] {
+            width: 100%;
+            height: 40px;
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .btn {
+            width: 100%;
+            background: linear-gradient(90deg, #ff006e, #8338ec);
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 0, 110, 0.8);
+        }
+
+        .spinning-area {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .brainrot-spinning {
+            width: 500px;
+            height: 500px;
+            animation: spin 3s linear infinite;
+            filter: drop-shadow(0 0 30px rgba(255, 0, 110, 0.8))
+                    drop-shadow(0 0 60px rgba(131, 56, 236, 0.6));
+        }
+
+        .brainrot-spinning img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .stats {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 8px;
+            color: #00ff00;
+            text-align: center;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #00ff00;
+            border-radius: 4px;
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        /* Nuevos estilos para las mejoras */
+        .sound-controls {
+            margin-top: 20px;
+        }
+        
+        .sound-btn {
+            background: linear-gradient(90deg, #00ff00, #00ffff);
+            color: black;
+            font-weight: bold;
+        }
+        
+        .sound-btn:hover {
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+        }
+        
+        .direction-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .direction-btn {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            color: #00ff00;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .direction-btn:hover, .direction-btn.active {
+            background: #00ff00;
+            color: black;
+        }
+        
+        .preset-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .preset-btn {
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #ff006e;
+            border-radius: 8px;
+            color: #ff006e;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .preset-btn:hover {
+            background: #ff006e;
+            color: white;
+        }
+        
+        .counter {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ff00;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 1.2em;
+            z-index: 999;
+        }
+        
+        .effects-controls {
+            margin-top: 15px;
+        }
+        
+        .effect-btn {
+            background: linear-gradient(90deg, #ff9500, #ff006e);
+        }
+        
+        .effect-btn:hover {
+            box-shadow: 0 0 20px rgba(255, 149, 0, 0.8);
+        }
+        
+        .trail {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        .shake {
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .paused {
+            animation-play-state: paused;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            color: #00ff00;
+            font-size: 1em;
+        }
+        
+        .search-box::placeholder {
+            color: #00ff00;
+            opacity: 0.7;
+        }
+        
+        .random-btn {
+            background: linear-gradient(90deg, #ff00ff, #00ffff);
+        }
+        
+        .random-btn:hover {
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <button class="toggle-btn" id="toggleBtn">⚙️</button>
+
+    <div class="panel" id="panel">
+        <h1>🧠 BRAINROT SPINNER 💀</h1>
+        
+        <div class="section-title">Buscar Brainrot</div>
+        <input type="text" class="search-box" id="searchBox" placeholder="🔍 Buscar personaje...">
+        
+        <div class="section-title">Selecciona Brainrot</div>
+        <div class="brainrot-grid" id="brainrotGrid"></div>
+
+        <div class="controls">
+            <div class="section-title">Configuración</div>
+            
+            <div class="control-group">
+                <label>⚡ Velocidad: <span id="speedValue">3</span>s</label>
+                <input type="range" id="speedSlider" min="0.5" max="10" step="0.5" value="3">
+            </div>
+
+            <div class="control-group">
+                <label>📏 Tamaño: <span id="sizeValue">500</span>px</label>
+                <input type="range" id="sizeSlider" min="200" max="800" step="50" value="500">
+            </div>
+            
+            <div class="control-group">
+                <label>🔄 Dirección de giro</label>
+                <div class="direction-controls">
+                    <button class="direction-btn active" id="clockwiseBtn">↻ Horario</button>
+                    <button class="direction-btn" id="counterBtn">↺ Antihorario</button>
+                </div>
+            </div>
+
+            <div class="section-title">Colores del Fondo</div>
+            <div class="color-grid">
+                <div class="control-group">
+                    <label>Color 1</label>
+                    <input type="color" id="color1" value="#667eea">
+                </div>
+                <div class="control-group">
+                    <label>Color 2</label>
+                    <input type="color" id="color2" value="#764ba2">
+                </div>
+                <div class="control-group">
+                    <label>Color 3</label>
+                    <input type="color" id="color3" value="#f093fb">
+                </div>
+            </div>
+            
+            <div class="section-title">Efectos</div>
+            <div class="preset-buttons">
+                <button class="preset-btn" id="rainbowBtn">🌈 Arcoíris</button>
+                <button class="preset-btn" id="matrixBtn">💚 Matrix</button>
+                <button class="preset-btn" id="neonBtn">🔆 Neon</button>
+                <button class="preset-btn" id="darkBtn">🌙 Oscuro</button>
+            </div>
+            
+            <button class="btn effect-btn" id="shakeBtn">💥 Efecto Temblor</button>
+            <button class="btn effect-btn" id="trailBtn">✨ Efecto Estela</button>
+            <button class="btn random-btn" id="randomBtn">🎲 Brainrot Aleatorio</button>
+            
+            <div class="sound-controls">
+                <div class="section-title">Sonido</div>
+                <button class="btn sound-btn" id="soundBtn">🔊 Activar Sonido</button>
+            </div>
+
+            <button class="btn" id="pauseBtn">⏸️ Pausar/Reanudar</button>
+            <button class="btn" id="clearBtn">🗑️ Limpiar</button>
+        </div>
+
+        <div class="stats">
+            Brainrot activo: <span id="currentBrainrot">Ninguno</span>
+        </div>
+    </div>
+
+    <div class="spinning-area" id="spinningArea"></div>
+    <div class="counter" id="counter">Vueltas: 0</div>
+
+    <script>
+        const brainrots = [
+            { name: "Gorillo Watermellondrillo", url: "https://www.pngall.com/wp-content/uploads/20/Gorillo-Watermellondrillo-PNG.png" },
+            { name: "Bobrito Bandito", url: "https://www.pngall.com/wp-content/uploads/20/Bobrito-Bandito-PNG.png" },
+            { name: "Tung Tung Tung Sahur", url: "https://www.pngall.com/wp-content/uploads/20/Tung-Tung-Tung-Sahur-PNG.png" },
+            { name: "Tralalero Tralala", url: "https://www.pngall.com/wp-content/uploads/20/Tralalero-Tralala-PNG.png" },
+            { name: "Ta Ta Ta Ta Ta Sahur", url: "https://www.pngall.com/wp-content/uploads/20/Ta-Ta-Ta-Ta-Ta-Sahur-PNG.png" },
+            { name: "Matteooooooooooooo", url: "https://www.pngall.com/wp-content/uploads/20/Matteooooooooooooo-PNG.png" },
+            { name: "Ballerino Lololo", url: "https://www.pngall.com/wp-content/uploads/20/Ballerino-Lololo-PNG.png" },
+            { name: "Pot Hotspot", url: "https://www.pngall.com/wp-content/uploads/20/Pot-hotspot-PNG.png" },
+            { name: "Odindin Dean Dean Dunmadin Dean Dundun", url: "https://www.pngall.com/wp-content/uploads/20/Odindin-Dean-Dean-Dunmadin-Dean-Dundun-PNG.png" },
+            { name: "Zibra Zubra Zibralini", url: "https://www.pngall.com/wp-content/uploads/20/Zibra-Zubra-Zibralini-PNG.png" },
+            { name: "Trippi Troppi", url: "https://www.pngall.com/wp-content/uploads/20/Trippi-Troppi-PNG.png" },
+            { name: "Bailarina Capuchina", url: "https://www.pngall.com/wp-content/uploads/20/Bailarina-Capuchina-PNG.png" },
+            { name: "La Vaca Saturno", url: "https://www.pngall.com/wp-content/uploads/20/La-Vaca-Saturno-PNG.png" },
+            { name: "Frigo Camelo", url: "https://www.pngall.com/wp-content/uploads/20/Frigo-Camelo-PNG.png" },
+            { name: "Girafa Sandia", url: "https://www.pngall.com/wp-content/uploads/20/Girafa-Sandia-PNG.png" },
+            { name: "Rhino Toasterino", url: "https://www.pngall.com/wp-content/uploads/20/Rhino-Toasterino-PNG.png" },
+            { name: "Spaghetti Tualetti", url: "https://www.pngall.com/wp-content/uploads/20/Spaghetti-Tualetti-PNG.png" },
+            { name: "Espressona Signora", url: "https://www.pngall.com/wp-content/uploads/20/Espressona-Signora-PNG.png" },
+            { name: "Cappuccino Babooino", url: "https://www.pngall.com/wp-content/uploads/20/Cappuccino-Babooino-PNG.png" },
+            { name: "Perochello Lemonchello", url: "https://www.pngall.com/wp-content/uploads/20/Perochello-Lemonchello-PNG.png" },
+            { name: "Bulbito Bandito Traktorito", url: "https://www.pngall.com/wp-content/uploads/20/Bulbito-Bandito-Traktorito-PNG.png" },
+            { name: "Banannito Dolfinito", url: "https://www.pngall.com/wp-content/uploads/20/Banannito-Dolfinito-PNG.png" },
+            { name: "Pizzarino Bambino", url: "https://www.pngall.com/wp-content/uploads/20/Pizzarino-Bambino-PNG.png" },
+            { name: "Gelato Potato", url: "https://www.pngall.com/wp-content/uploads/20/Gelato-Potato-PNG.png" },
+            { name: "Ravioli Broccoli", url: "https://www.pngall.com/wp-content/uploads/20/Ravioli-Broccoli-PNG.png" },
+            { name: "Linguini Panini", url: "https://www.pngall.com/wp-content/uploads/20/Linguini-Panini-PNG.png" },
+            { name: "Tiramisu Pikachu", url: "https://www.pngall.com/wp-content/uploads/20/Tiramisu-Pikachu-PNG.png" },
+            { name: "Tortellini Martini", url: "https://www.pngall.com/wp-content/uploads/20/Tortellini-Martini-PNG.png" },
+            { name: "Focaccia Alpaca", url: "https://www.pngall.com/wp-content/uploads/20/Focaccia-Alpaca-PNG.png" },
+            { name: "Biscotti Lottie", url: "https://www.pngall.com/wp-content/uploads/20/Biscotti-Lottie-PNG.png" }
+        ];
+
+        const brainrotGrid = document.getElementById('brainrotGrid');
+        const spinningArea = document.getElementById('spinningArea');
+        const speedSlider = document.getElementById('speedSlider');
+        const sizeSlider = document.getElementById('sizeSlider');
+        const currentBrainrotSpan = document.getElementById('currentBrainrot');
+        const panel = document.getElementById('panel');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const color1Input = document.getElementById('color1');
+        const color2Input = document.getElementById('color2');
+        const color3Input = document.getElementById('color3');
+        const clockwiseBtn = document.getElementById('clockwiseBtn');
+        const counterBtn = document.getElementById('counterBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const shakeBtn = document.getElementById('shakeBtn');
+        const trailBtn = document.getElementById('trailBtn');
+        const soundBtn = document.getElementById('soundBtn');
+        const counter = document.getElementById('counter');
+        const rainbowBtn = document.getElementById('rainbowBtn');
+        const matrixBtn = document.getElementById('matrixBtn');
+        const neonBtn = document.getElementById('neonBtn');
+        const darkBtn = document.getElementById('darkBtn');
+        const searchBox = document.getElementById('searchBox');
+        const randomBtn = document.getElementById('randomBtn');
+
+        let rotationCount = 0;
+        let audioContext;
+        let oscillator;
+        let isSoundEnabled = false;
+        let isTrailEnabled = false;
+        let trailInterval;
+        let currentBrainrot = null;
+
+        // Toggle panel
+        toggleBtn.addEventListener('click', () => {
+            panel.classList.toggle('hidden');
+            toggleBtn.textContent = panel.classList.contains('hidden') ? '⚙️' : '✖️';
+        });
+
+        // Crear grid de brainrots
+        function renderBrainrots(filter = '') {
+            brainrotGrid.innerHTML = '';
+            const filteredBrainrots = brainrots.filter(brainrot => 
+                brainrot.name.toLowerCase().includes(filter.toLowerCase())
+            );
+            
+            filteredBrainrots.forEach(brainrot => {
+                const item = document.createElement('div');
+                item.className = 'brainrot-item';
+                item.title = brainrot.name;
+                
+                const img = document.createElement('img');
+                img.src = brainrot.url;
+                img.alt = brainrot.name;
+                img.onerror = function() {
+                    this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjMDAwMDAwIi8+Cjx0ZXh0IHg9IjUwIiB5PSI1MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjgiIGZpbGw9IiMwMGZmMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIwLjNlbSI+QnJhaW5yb3Q8L3RleHQ+Cjx0ZXh0IHg9IjUwIiB5PSI2MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjYiIGZpbGw9IiMwMGZmMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIwLjNlbSI+bm8gZGlzcG9uaWJsZTwvdGV4dD4KPC9zdmc+';
+                };
+                
+                item.appendChild(img);
+                item.addEventListener('click', () => selectBrainrot(brainrot, item));
+                brainrotGrid.appendChild(item);
+            });
+        }
+
+        // Búsqueda en tiempo real
+        searchBox.addEventListener('input', function() {
+            renderBrainrots(this.value);
+        });
+
+        // Inicializar grid
+        renderBrainrots();
+
+        function selectBrainrot(brainrot, element) {
+            // Remover selección previa
+            document.querySelectorAll('.brainrot-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Seleccionar nuevo
+            element.classList.add('selected');
+            
+            // Limpiar área
+            spinningArea.innerHTML = '';
+            
+            // Crear imagen giratoria
+            const container = document.createElement('div');
+            container.className = 'brainrot-spinning';
+            const img = document.createElement('img');
+            img.src = brainrot.url;
+            img.alt = brainrot.name;
+            img.onerror = function() {
+                this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjMDAwMDAwIi8+Cjx0ZXh0IHg9IjUwIiB5PSI1MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSIjMDBmZjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iMC4zZW0iPkJyYWlucm90PC90ZXh0Pgo8dGV4dCB4PSI1MCIgeT0iNjUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI4IiBmaWxsPSIjMDBmZjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iMC4zZW0iPm5vIGRpc3BvbmlibGU8L3RleHQ+Cjwvc3ZnPg==';
+            };
+            container.appendChild(img);
+            
+            container.style.width = sizeSlider.value + 'px';
+            container.style.height = sizeSlider.value + 'px';
+            container.style.animationDuration = speedSlider.value + 's';
+            
+            // Reiniciar contador
+            rotationCount = 0;
+            counter.textContent = 'Vueltas: 0';
+            
+            // Añadir detector de vueltas completas
+            container.addEventListener('animationiteration', () => {
+                rotationCount++;
+                counter.textContent = `Vueltas: ${rotationCount}`;
+                
+                // Efecto de sonido si está activado
+                if (isSoundEnabled) {
+                    playSpinSound();
+                }
+            });
+            
+            spinningArea.appendChild(container);
+            currentBrainrotSpan.textContent = brainrot.name;
+            currentBrainrot = brainrot;
+        }
+
+        // Brainrot aleatorio
+        randomBtn.addEventListener('click', function() {
+            const randomIndex = Math.floor(Math.random() * brainrots.length);
+            const randomBrainrot = brainrots[randomIndex];
+            
+            // Encontrar el elemento correspondiente en el grid
+            const items = document.querySelectorAll('.brainrot-item');
+            const item = items[randomIndex];
+            
+            if (item) {
+                selectBrainrot(randomBrainrot, item);
+                
+                // Scroll al elemento si está fuera de vista
+                item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
+
+        // Actualizar valores de sliders
+        speedSlider.addEventListener('input', function() {
+            document.getElementById('speedValue').textContent = this.value;
+            const element = document.querySelector('.brainrot-spinning');
+            if (element) {
+                element.style.animationDuration = this.value + 's';
+            }
+        });
+
+        sizeSlider.addEventListener('input', function() {
+            document.getElementById('sizeValue').textContent = this.value;
+            const element = document.querySelector('.brainrot-spinning');
+            if (element) {
+                element.style.width = this.value + 'px';
+                element.style.height = this.value + 'px';
+            }
+        });
+
+        // Colores del fondo
+        function updateBackgroundColors() {
+            document.body.style.setProperty('--color1', color1Input.value);
+            document.body.style.setProperty('--color2', color2Input.value);
+            document.body.style.setProperty('--color3', color3Input.value);
+        }
+
+        color1Input.addEventListener('input', updateBackgroundColors);
+        color2Input.addEventListener('input', updateBackgroundColors);
+        color3Input.addEventListener('input', updateBackgroundColors);
+
+        // Dirección de giro
+        clockwiseBtn.addEventListener('click', function() {
+            clockwiseBtn.classList.add('active');
+            counterBtn.classList.remove('active');
+            const element = document.querySelector('.brainrot-spinning');
+            if (element) {
+                element.style.animationDirection = 'normal';
+            }
+        });
+
+        counterBtn.addEventListener('click', function() {
+            counterBtn.classList.add('active');
+            clockwiseBtn.classList.remove('active');
+            const element = document.querySelector('.brainrot-spinning');
+            if (element) {
+                element.style.animationDirection = 'reverse';
+            }
+        });
+
+        // Pausar/Reanudar
+        pauseBtn.addEventListener('click', function() {
+            const element = document.querySelector('.brainrot-spinning');
+            if (element) {
+                element.classList.toggle('paused');
+                pauseBtn.textContent = element.classList.contains('paused') ? '▶️ Reanudar' : '⏸️ Pausar';
+            }
+        });
+
+        // Efecto de temblor
+        shakeBtn.addEventListener('click', function() {
+            const element = document.querySelector('.brainrot-spinning');
+            if (element) {
+                element.classList.add('shake');
+                setTimeout(() => {
+                    element.classList.remove('shake');
+                }, 500);
+            }
+        });
+
+        // Efecto de estela
+        trailBtn.addEventListener('click', function() {
+            isTrailEnabled = !isTrailEnabled;
+            trailBtn.textContent = isTrailEnabled ? '✨ Desactivar Estela' : '✨ Efecto Estela';
+            
+            if (isTrailEnabled) {
+                startTrailEffect();
+            } else {
+                stopTrailEffect();
+            }
+        });
+
+        function startTrailEffect() {
+            trailInterval = setInterval(() => {
+                const element = document.querySelector('.brainrot-spinning');
+                if (element && !element.classList.contains('paused')) {
+                    const trail = document.createElement('div');
+                    trail.className = 'trail';
+                    trail.style.width = element.offsetWidth + 'px';
+                    trail.style.height = element.offsetHeight + 'px';
+                    trail.style.background = `url(${element.querySelector('img').src}) center/contain no-repeat`;
+                    trail.style.opacity = '0.5';
+                    trail.style.left = element.getBoundingClientRect().left + 'px';
+                    trail.style.top = element.getBoundingClientRect().top + 'px';
+                    document.body.appendChild(trail);
+                    
+                    setTimeout(() => {
+                        if (trail.parentNode) {
+                            trail.parentNode.removeChild(trail);
+                        }
+                    }, 1000);
+                }
+            }, 100);
+        }
+
+        function stopTrailEffect() {
+            clearInterval(trailInterval);
+            document.querySelectorAll('.trail').forEach(trail => {
+                if (trail.parentNode) {
+                    trail.parentNode.removeChild(trail);
+                }
+            });
+        }
+
+        // Sonido
+        soundBtn.addEventListener('click', function() {
+            isSoundEnabled = !isSoundEnabled;
+            soundBtn.textContent = isSoundEnabled ? '🔇 Desactivar Sonido' : '🔊 Activar Sonido';
+            
+            if (isSoundEnabled && !audioContext) {
+                initAudio();
+            }
+        });
+
+        function initAudio() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            oscillator = audioContext.createOscillator();
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+            
+            const gainNode = audioContext.createGain();
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+
+        function playSpinSound() {
+            if (!audioContext) return;
+            
+            const oscillator = audioContext.createOscillator();
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(300 + (rotationCount % 5) * 100, audioContext.currentTime);
+            
+            const gainNode = audioContext.createGain();
+            gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.2);
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.2);
+        }
+
+        // Presets de colores
+        rainbowBtn.addEventListener('click', function() {
+            color1Input.value = '#ff0000';
+            color2Input.value = '#00ff00';
+            color3Input.value = '#0000ff';
+            updateBackgroundColors();
+        });
+
+        matrixBtn.addEventListener('click', function() {
+            color1Input.value = '#00ff00';
+            color2Input.value = '#003300';
+            color3Input.value = '#001100';
+            updateBackgroundColors();
+        });
+
+        neonBtn.addEventListener('click', function() {
+            color1Input.value = '#ff00ff';
+            color2Input.value = '#00ffff';
+            color3Input.value = '#ffff00';
+            updateBackgroundColors();
+        });
+
+        darkBtn.addEventListener('click', function() {
+            color1Input.value = '#000000';
+            color2Input.value = '#222222';
+            color3Input.value = '#444444';
+            updateBackgroundColors();
+        });
+
+        // Limpiar
+        document.getElementById('clearBtn').addEventListener('click', function() {
+            spinningArea.innerHTML = '';
+            currentBrainrotSpan.textContent = 'Ninguno';
+            document.querySelectorAll('.brainrot-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            rotationCount = 0;
+            counter.textContent = 'Vueltas: 0';
+            stopTrailEffect();
+            isTrailEnabled = false;
+            trailBtn.textContent = '✨ Efecto Estela';
+            currentBrainrot = null;
+        });
+    </script>
+</body>
+</html>
